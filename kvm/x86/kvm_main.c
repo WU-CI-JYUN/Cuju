@@ -3486,6 +3486,22 @@ out_free_irq_routing:
         r = kvmft_ioctl_set_master_slave_sockets(kvm, &socks);
         break;
     }
+	/* 
+	 * cuju support vhost : kvm_ioctl -> vhost - definition
+	 */
+	case KVM_VHOST_SET_FTMODE: {
+		r = cuju_vhost_set_ftmode(arg);
+		break;
+	}
+	case KVM_VHOST_SET_FLUSH: {
+		cuju_vhost_set_flush(arg);
+		break;
+	}
+	case KVM_VHOST_SET_SNAPSHOT: {
+		r = cuju_vhost_snapshot(arg);
+		break;
+	}
+
 	default:
 		r = kvm_arch_vm_ioctl(filp, ioctl, arg);
 	}

@@ -47,6 +47,12 @@
 #include "hw/nmi.h"
 #include "sysemu/replay.h"
 
+/*
+ * cuju support vhost : include
+ */
+#include "migration/migration.h"
+#include "migration/cuju-kvm-share-mem.h"
+
 #ifndef _WIN32
 #include "qemu/compatfd.h"
 #endif
@@ -1508,6 +1514,12 @@ void vm_stop_mig(void)
     ft_stopped_cpus = true;
     cpu_disable_ticks();
     pause_all_vcpus();
+
+	/*
+	 * cuju support vhost : cuju vhost stop
+	 */
+	if (cuju_vhost_start_ft > 1)
+		cuju_vhost_vm_state_notify(0, 7);
 }
 
 void vm_start_mig(void)
@@ -1515,6 +1527,17 @@ void vm_start_mig(void)
     ft_stopped_cpus = false;
     cpu_enable_ticks();
     resume_all_vcpus();
+
+	/*
+	 * cuju support vhost : cuju vhost start
+	 */
+	if (cuju_vhost_start_ft > 1) {
+		cuju_vhost_vm_state_notify(1, 9);
+		cuju_vhost_epoch_ret = cuju_kvm_vhost_set_snapshot(0);
+	} else if (cuju_vhost_start_ft) {
+		printf("cuju_vhost_start = %d\n", cuju_vhost_start_ft);
+		cuju_vhost_start_ft++;
+	}
 }
 
 /* does a state transition even if the VM is already stopped,

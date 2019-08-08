@@ -34,6 +34,11 @@
 #include <linux/kvm.h>
 #include "migration/migration.h"
 
+/*
+ * cuju support vhost : include - migration/cuju-ft-trans-file.c
+ */
+#include "migration/cuju-kvm-share-mem.h"
+
 static QemuMutex *cuju_buf_desc_mutex = NULL;
 static QemuCond *cuju_buf_desc_cond = NULL;
 
@@ -41,8 +46,11 @@ int cuju_is_load = 0;
 QemuMutex cuju_load_mutex;
 QemuCond cuju_load_cond;
 
-extern void kvm_shmem_load_ram(void *buf, int size);
-extern void kvm_shmem_load_ram_with_hdr(void *buf, int size, void *hdr_buf, int hdr_size);
+/*
+ * cuju support vhost : doesn't need?
+ */
+//extern void kvm_shmem_load_ram(void *buf, int size);
+//extern void kvm_shmem_load_ram_with_hdr(void *buf, int size, void *hdr_buf, int hdr_size);
 
 char *blk_server = NULL;
 
@@ -761,6 +769,10 @@ static int cuju_ft_trans_close(void *opaque)
 
     CujuQEMUFileFtTrans *s = opaque;
     int ret;
+	/*
+	 * cuju support vhost : for cuju vhost - set ftmode - close
+	 */
+	int vhost_ret;
 
     printf("%s\n", __func__);
 
@@ -802,8 +814,16 @@ static int cuju_ft_trans_close(void *opaque)
 		}
 
         qemu_announce_self();
-
         cuju_ft_mode = CUJU_FT_TRANSACTION_HANDOVER;
+
+	/*
+	 * cuju support vhost : set ftmode - close
+	 */
+	vhost_ret = cuju_kvm_vhost_set_ftmode(0);
+	if (vhost_ret) {
+		printf("-- cuju vhost ftmode down --\n");
+	}
+
         vm_start();
         printf("%s vm_started.\n", __func__);
     }

@@ -33,6 +33,12 @@
 								((double)(tv).tv_usec) / 1000000)
 #define TIMEVAL_TO_US(tv)   ((tv).tv_sec * 1000000 + (tv).tv_usec)
 
+/*
+ * cuju support vhost : for vhost global
+ */
+int cuju_vhost_start_ft = 0;
+int cuju_vhost_epoch_ret = 0;
+
 static unsigned int dirty_pages_userspace_off = 0;
 static unsigned int dirty_pages_userspace_off_committed = 0;
 static unsigned int dirty_pages_userspace[1024];
@@ -272,6 +278,10 @@ void kvm_share_mem_init(unsigned long ram_size)
 void kvm_shmem_start_ft(void)
 {
     int ret;
+	/*
+	 * cuju support vhost : for cuju vhost - set ftmode - start
+	 */
+	int vhost_ret;
 
     //kvm_start_log_share_dirty_pages();
 
@@ -280,6 +290,12 @@ void kvm_shmem_start_ft(void)
         fprintf(stderr, "%s failed: %d\n", __func__, ret);
         exit(ret);
     }
+	/*
+	 * cuju support vhost : set ftmode - start
+	 */
+	vhost_ret = cuju_kvm_vhost_set_ftmode(1);
+	if (vhost_ret)
+		printf("set ftmode start\n");
 
     ft_started = 1;
 }
@@ -1474,3 +1490,21 @@ void kvmft_update_epoch_flush_time_linear(double time_s)
     }
 }
 
+/*
+ * cuju support vhost : cuju -> kvm_ioctl - definition
+ */
+int cuju_kvm_vhost_set_ftmode(int flag)
+{
+	cuju_vhost_start_ft = flag;
+	
+	return kvm_vm_ioctl(kvm_state, KVM_VHOST_SET_FTMODE, flag);
+}
+void cuju_kvm_vhost_set_flush(int arg)
+{
+	kvm_vm_ioctl(kvm_state, KVM_VHOST_SET_FLUSH, arg);
+	return;
+}
+int cuju_kvm_vhost_set_snapshot(int flag)
+{
+	return kvm_vm_ioctl(kvm_state, KVM_VHOST_SET_SNAPSHOT, flag);
+}

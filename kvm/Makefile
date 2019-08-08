@@ -8,6 +8,10 @@ ARCH_CONFIG := $(shell echo $(ARCH_DIR) | tr '[:lower:]' '[:upper:]')
 # NONARCH_CONFIG used for unifdef, and only cover X86 now
 NONARCH_CONFIG = $(filter-out $(ARCH_CONFIG),X86)
 
+# cuju support vhost : vhost FT support
+KBUILD_EXTRA_SYMBOLS+=/home/cujuft/Documents/nfs/linux-source-4.4.0/drivers/vhost/Module.symvers
+export KBUILD_EXTRA_SYMBOLS
+
 DESTDIR = /
 
 MAKEFILE_PRE = $(ARCH_DIR)/Makefile.pre

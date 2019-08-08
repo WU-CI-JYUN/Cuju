@@ -114,6 +114,32 @@
 #define FTPRINTF(fmt, ...) \
     do { } while (0)
 #endif
+
+/*
+ * cuju support vhost : vhost get device - definition 
+ */
+bool CUJU_GET_VHOST;
+void *CUJU_VHOST_ADDR;
+void set_cuju_get_vhost(bool n)
+{
+       CUJU_GET_VHOST = n;
+}
+
+void set_cuju_vhost_addr(void *addr)
+{
+       CUJU_VHOST_ADDR = addr;
+}
+
+bool get_cuju_get_vhost(void) 
+{
+       return CUJU_GET_VHOST;
+}
+
+void *get_cuju_vhost_addr(void)
+{
+       return CUJU_VHOST_ADDR;
+}
+
 static void migrate_assert_ft_state_change(int f, int t)
 {
     if (f == CUJU_FT_OFF)
@@ -2252,6 +2278,16 @@ static void kvmft_flush_output(MigrationState *s)
     if (kvm_blk_session)
         kvm_blk_epoch_commit(kvm_blk_session);
 	*/
+
+	/*
+	 * cuju support vhost : cuju -> kvm - flush vhost buffer
+	 */
+	if (cuju_vhost_start_ft > 1) {
+		if (cuju_vhost_epoch_ret) {
+			cuju_kvm_vhost_set_flush(s->ft_state);
+			cuju_vhost_epoch_ret--;
+		}
+	}
 
     virtio_blk_commit_temp_list(s->virtio_blk_temp_list);
     s->virtio_blk_temp_list = NULL;

@@ -1388,6 +1388,13 @@ struct kvm_shmem_mark_page_dirty {
 #define KVM_GET_PUT_OFF              	  _IOW(KVMIO,  0xd1, int)
 #define KVM_RESET_PUT_OFF                 _IOW(KVMIO,  0xd2, int)
 
+/*
+ * cuju support vhost : Define kvm ioctl kvm -> vhost - Macro
+ */
+#define KVM_VHOST_SET_FTMODE                  _IOW(KVMIO,  0xd3, int)
+#define KVM_VHOST_SET_FLUSH                   _IOW(KVMIO, 0xd4, int)
+#define KVM_VHOST_SET_SNAPSHOT                _IOW(KVMIO, 0xd5, int)
+
 struct kvm_shmem_extend {
   // output from kvm to qemu
   unsigned long page_nums_size;

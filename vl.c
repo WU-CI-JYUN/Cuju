@@ -1653,6 +1653,23 @@ void vm_state_notify(int running, RunState state)
     }
 }
 
+/*
+ * cuju support vhost : vhost stop & start - definition
+ */
+void cuju_vhost_vm_state_notify(int running, int state)
+{
+	VMChangeStateEntry *e, *next;
+
+	trace_vm_state_notify(running, state);
+
+	QLIST_FOREACH_SAFE(e, &vm_change_state_head, entries, next) {
+		if (get_cuju_vhost_addr() == e->opaque) {
+			e->cb(e->opaque, running, state);
+		} else
+			continue;
+	}
+}
+
 /* reset/shutdown handler */
 
 typedef struct QEMUResetEntry {

@@ -45,6 +45,8 @@
 
 #include "net/vhost_net.h"
 
+#include "migration/cuju-kvm-share-mem.h"
+
 typedef struct TAPState {
     NetClientState nc;
     int fd;

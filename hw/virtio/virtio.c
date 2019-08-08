@@ -1016,6 +1016,16 @@ int virtio_set_status(VirtIODevice *vdev, uint8_t val)
     VirtioDeviceClass *k = VIRTIO_DEVICE_GET_CLASS(vdev);
     trace_virtio_set_status(vdev, val);
 
+	/*
+	 * cuju support vhost : vhost get device - get vhost addr
+	 */
+	if ((strncmp(vdev->name, "virtio-net", 10) == 0) && 
+					!get_cuju_get_vhost()) {
+			printf("PRINTGG : vhost get device - get vhost addr\n");
+			set_cuju_get_vhost(true);
+			set_cuju_vhost_addr(vdev);
+	}
+
     if (virtio_vdev_has_feature(vdev, VIRTIO_F_VERSION_1)) {
         if (!(vdev->status & VIRTIO_CONFIG_S_FEATURES_OK) &&
             val & VIRTIO_CONFIG_S_FEATURES_OK) {

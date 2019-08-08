@@ -18,6 +18,13 @@
 
 #define KVM_MAX_MIGRATION_DESC  16
 
+/*
+ * cuju support vhost : vhost extern
+ */
+extern int cuju_vhost_set_ftmode(int flag);
+extern int cuju_vhost_snapshot(int flag);
+extern void cuju_vhost_set_flush(int arg);
+
 struct kvm;
 struct kvm_shmem_init;
 struct kvm_shmem_extend;
